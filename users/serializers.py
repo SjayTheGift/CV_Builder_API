@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer 
 
+from cv_api.models import Resume
 
 User = get_user_model()
 
@@ -45,10 +46,18 @@ class LogInSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
         user_query = User.objects.filter(email=user)
+        resume_data = Resume.objects.get(user=user)
         data_dict = [{'email': i.email } for i in user_query]
+
         email = data_dict[0]['email']
 
-        user_data = {'email': str(email)}
+        resume_id = ''
+
+        if(resume_data):
+            resume_id =resume_data.id
+        
+
+        user_data = {'email': str(email), 'resume': resume_id}
 
         for key, value in user_data.items():
             if key != 'id':

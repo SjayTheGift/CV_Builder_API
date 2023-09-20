@@ -3,67 +3,118 @@ from rest_framework import generics, mixins, status, viewsets
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView # new
-from rest_framework_simplejwt.tokens import RefreshToken, Token
-from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework_simplejwt.backends import TokenBackend
 from django.http import Http404
 
-from .models import Resume, Experience, Education, Skill, Achievement
+from .models import Resume, Experience, Education, Skill
 from .serializers import (
     ResumeSerializer,
     ExperienceSerializer,
     EducationSerializer,
     SkillSerializer,
-    AchievementSerializer,
     )
 
 
-class ResumeView(generics.ListCreateAPIView):
+class TestingView(generics.ListCreateAPIView):
     serializer_class = ResumeSerializer
     queryset = Resume.objects.all()
+
+
+
+class ResumeView(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ResumeSerializer
+    # queryset = Resume.objects.all()
+
+    def get_queryset(self):
+        token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+        valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+        user = valid_data['user_id']
+        return Resume.objects.filter(user=user)
+
 
 
 class ResumeDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
     serializer_class = ResumeSerializer
-    queryset = Resume.objects.all()
+    # queryset = Resume.objects.all()
+    
+    def get_queryset(self):
+        token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+        valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+        user = valid_data['user_id']
+        return Resume.objects.filter(user=user)
 
 
-class ExperienceView(generics.ListCreateAPIView):
-    serializer_class = ExperienceSerializer
-    queryset = Experience.objects.all()
+# class ExperienceView(generics.ListCreateAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = ExperienceSerializer
+
+#     def get_queryset(self):
+#         token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+#         valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+#         resume = valid_data['resume']
+#         print(resume)
+#         return Experience.objects.filter(resume=resume)
 
 
-class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ExperienceSerializer
-    queryset = Experience.objects.all()
+# class ExperienceDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = ExperienceSerializer
+
+#     def get_queryset(self):
+#         token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+#         valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+#         # user = valid_data['user_id']
+#         resume = valid_data['resume']
+#         return Experience.objects.filter(resume=resume)
 
 
-class EducationView(generics.ListCreateAPIView):
-    serializer_class = EducationSerializer
-    queryset = Education.objects.all()
+# class EducationView(generics.ListCreateAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = EducationSerializer
+#     # queryset = Education.objects.all()
+
+#     def get_queryset(self):
+#         token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+#         valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+#         resume = valid_data['resume']
+#         print(resume)
+#         return Education.objects.filter(resume=resume)
 
 
-class EducationDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = EducationSerializer
-    queryset = Education.objects.all()
+
+# class EducationDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = EducationSerializer
+    
+#     def get_queryset(self):
+#         token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+#         valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+#         # user = valid_data['user_id']
+#         resume = valid_data['resume']
+#         return Education.objects.filter(resume=resume)
 
 
-class SkillView(generics.ListCreateAPIView):
-    serializer_class = SkillSerializer
-    queryset = Skill.objects.all()
+# class SkillView(generics.ListCreateAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = SkillSerializer
+
+#     def get_queryset(self):
+#         token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+#         valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+#         # user = valid_data['user_id']
+#         resume = valid_data['resume']
+#         return Skill.objects.filter(resume=resume)
 
 
-class SkillDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = SkillSerializer
-    queryset = Skill.objects.all()
+# class SkillDetailView(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = (IsAuthenticated,)
+#     serializer_class = SkillSerializer
 
-
-class AchievementView(generics.ListCreateAPIView):
-    serializer_class = AchievementSerializer
-    queryset = Achievement.objects.all()
-
-
-class AchievementDetailView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = AchievementSerializer
-    queryset = Achievement.objects.all()
-
+#     def get_queryset(self):
+#         token = self.request.META.get('HTTP_AUTHORIZATION', " ").split(' ')[1]
+#         valid_data = TokenBackend(algorithm='HS256').decode(token, verify=False)
+#         # user = valid_data['user_id']
+#         resume = valid_data['resume']
+#         return Skill.objects.filter(resume=resume)
