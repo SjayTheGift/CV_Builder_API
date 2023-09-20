@@ -108,24 +108,24 @@ WSGI_APPLICATION = 'CV_builder.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
-
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DB_NAME'),
-        'USER': env('PRD_DB_USER'),
-        'PASSWORD': env('PRD_DB_PASSWORD'),
-        'HOST': env('PRD_HOST'),
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': env('DB_NAME'),
+#         'USER': env('PRD_DB_USER'),
+#         'PASSWORD': env('PRD_DB_PASSWORD'),
+#         'HOST': env('PRD_HOST'),
+#         'PORT': '5432',
+#     }
+# }
 
 
 # Password validation
@@ -197,16 +197,21 @@ AUTH_USER_MODEL = 'users.User'
 REST_FRAMEWORK = {
 	'DEFAULT_AUTHENTICATION_CLASSES': (
 		 'rest_framework_simplejwt.authentication.JWTAuthentication',
-          'rest_framework.authentication.BasicAuthentication',
+        #   'rest_framework.authentication.BasicAuthentication',
 	),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": True, 
     "BLACKLIST_AFTER_ROTATION": True,
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
+    # 'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    # 'TOKEN_TYPE_CLAIM': 'token_type',
 }
